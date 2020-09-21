@@ -6,7 +6,7 @@ A mini Symfony 5 project to check whether a team can win by rearranging its orde
   * Create & setup .env file similiar to .env.exmaple
 
 ## Command to run program
-  * Comand can be run in **2** ways:
+  * Command can be run in **2** ways:
     * **Interactive user input** -  
         * Run this console: php bin/console app:find-team-wining-chance 
         * **Note: Input should be comma separted integers only**
