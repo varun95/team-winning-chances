@@ -6,6 +6,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
 /**
  * Desc - Command to check whether a team can win by rearraging players against other team or not.
  */
@@ -41,7 +43,65 @@ class TeamWinnerCommand extends Command
     }
 
     /**
-     * Desc - Main execute function , it usually contains the logic to execute to complete this command task.
+     * Desc - This optional method is the first one executed for a command after configure()
+     *        and is useful to initialize properties based on the input arguments and options.
+     * 
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * 
+     * @return void
+     */
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        // SymfonyStyle is an optional feature that Symfony provides so you can
+        // apply a consistent look to the commands of your application.
+        // See https://symfony.com/doc/current/console/style.html
+        $this->io = new SymfonyStyle($input, $output);
+    }
+
+    /**
+     * Desc - This method is executed after initialize() and before execute(). Its purpose
+     *        is to check if some of the options/arguments are missing and interactively
+     *        ask the user for those values.
+     **/
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        if (null !== $input->getOption('team_a_values') && null !== $input->getOption('team_b_values')) {
+            return;
+        }
+
+        $this->io->title('Input Team Scores Interactive Wizard');
+        $this->io->text([
+            'If you prefer to not use this interactive wizard, provide the',
+            'arguments required by this command as follows:',
+            '',
+            '$php bin/console app:find-team-wining-chance --team_a_values=35,100,20,50,40 --team_b_values=35,10,30,20,90',
+            '',
+            'Now we\'ll ask you for the value of all the missing command arguments.',
+        ]);
+
+        // Ask for the team A score values if it's not defined
+        $teamAValues = $input->getOption('team_a_values');
+        if (null !== $teamAValues) {
+            $this->io->text(' > <info>Team A players: </info>:' . $teamAValues);
+        } else {
+            $teamAValues = $this->io->ask('Enter team A players');
+            $input->setOption('team_a_values', $teamAValues);
+        }
+
+        // Ask for the team B score values if it's not defined
+        $teamBValues = $input->getOption('team_b_values');
+        if (null !== $teamBValues) {
+            $this->io->text(' > <info>Team B players: </info>:' . $teamBValues);
+        } else {
+            $teamBValues = $this->io->ask('Enter team B players');
+            $input->setOption('team_b_values', $teamBValues);
+        }
+    }
+
+    /**
+     * Desc - Main execute function , it usually contains the logic to execute to 
+     *        complete this command task.
      *
      * @param InputInterface $input
      * @param OutputInterface $output
